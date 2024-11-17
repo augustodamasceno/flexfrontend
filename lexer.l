@@ -11,7 +11,8 @@ brancos {delim}+
 letra	[A-Za-z]
 digito	[0-9]
 id	    ({letra}|_)(({letra}|{digito}|_)*) 
-num	    {digito}+(\.{digito}+)?(E[+-]?{digito}+)?
+integer  {digito}+
+float    {digito}+"."{digito}+([eE][+-]?{digito}+)?
 string   \"([^"\\]|\\.|\\\\)*\"
 
 %%
@@ -20,21 +21,38 @@ if		    return Tag::IF;
 then		return Tag::THEN; 
 else		return Tag::ELSE; 
 while		return Tag::WHILE; 
+do          return Tag::DO;
+main        return Tag::MAIN;
+int         return Tag::TYPE;
+float       return Tag::TYPE;
+bool        return Tag::TYPE;
+true        return Tag::TRUE;
+false       return Tag::FALSE;
 {id}		return Tag::ID;  
-{num}	    return Tag::NUM; 
+{integer}	return Tag::INTEGER; 
+{float}     return Tag::FLOATING;
 {string}    return Tag::STRING;
 "||"        return Tag::OR; 
 "&&"        return Tag::AND; 
 "<"         return Tag::LT; 
 "<="        return Tag::LTE; 
 "=="        return Tag::EQ; 
+"="         return Tag::ATT; 
 "!="        return Tag::NE; 
 ">"         return Tag::GT;
 ">="        return Tag::GTE;
-main        return Tag::MAIN;
-int         return Tag::INTEGER;
-float       return Tag::FLOATING;
-bool        return Tag::BOOLEAN;
+"{"         return Tag::LBRACE;
+"}"         return Tag::RBRACE;
+"("         return Tag::LPAREN;
+")"         return Tag::RPAREN;
+"["         return Tag::LBRACKET;
+"]"         return Tag::RBRACKET;
+";"         return Tag::SEMICOLON;
+"-"         return Tag::SIGN_MINUS;
+"+"         return Tag::SIGN_PLUS;
+"*"         return Tag::SIGN_MULT;
+"/"         return Tag::SIGN_DIV;
+"!"         return Tag::EXCLAMATION;
 .           cout << YYText() << " é um token inválido!\n"; 
 %%
 

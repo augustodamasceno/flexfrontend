@@ -19,10 +19,10 @@ Statement * Parser::Program()
     if (!Match(Tag::MAIN))
         throw SyntaxError(scanner->Lineno(), "\'main\' esperado");
 
-    if (!Match('('))
+    if (!Match(Tag::LPAREN))
         throw SyntaxError(scanner->Lineno(), "\'(\' esperado");
 
-    if (!Match(')'))
+    if (!Match(Tag::RPAREN))
         throw SyntaxError(scanner->Lineno(), "\')\' esperado");
 
     return Block();
@@ -31,7 +31,7 @@ Statement * Parser::Program()
 Statement * Parser::Block()
 {
     // block -> { decls stmts }
-    if (!Match('{'))
+    if (!Match(Tag::LBRACE))
         throw SyntaxError(scanner->Lineno(), "\'{\' esperado");
 
     // ------------------------------------
@@ -44,7 +44,7 @@ Statement * Parser::Block()
     Decls();
     Statement * sts = Stmts();
 
-    if (!Match('}'))
+    if (!Match(Tag::RBRACE))
         throw SyntaxError(scanner->Lineno(), "\'}\' esperado");
 
     // ------------------------------------------------------
@@ -89,7 +89,7 @@ void Parser::Decls()
         }
 
         // verifica se é uma declaração de arranjo
-        if (Match('['))
+        if (Match(Tag::LBRACKET))
         {
             if (!Match(Tag::INTEGER))
             {
@@ -97,7 +97,7 @@ void Parser::Decls()
                 ss << "o índice de um arranjo deve ser um valor inteiro";
                 throw SyntaxError{scanner->Lineno(), ss.str()};
             }
-            if (!Match(']'))
+            if (!Match(Tag::RBRACKET))
             {
                 stringstream ss;
                 ss << "esperado ] no lugar de  \'" << lookahead->lexeme << "\'";
@@ -106,7 +106,7 @@ void Parser::Decls()
         }
 
         // verififica ponto e vírgula
-        if (!Match(';'))
+        if (!Match(Tag::SEMICOLON))
         {
             stringstream ss;
             ss << "encontrado \'" << lookahead->lexeme << "\' no lugar de ';'";
@@ -129,7 +129,7 @@ Statement *Parser::Stmts()
     case Tag::IF:
     case Tag::WHILE:
     case Tag::DO:
-    case '{':
+    case Tag::LBRACE:
     {
         Statement *st = Stmt();
         Statement *sts = Stmts();
@@ -157,7 +157,7 @@ Statement *Parser::Stmt()
     case Tag::ID:
     {
         Expression *left = Local();
-        if (!Match('='))
+        if (!Match(Tag::ATT))
         {
             stringstream ss;
             ss << "esperado = no lugar de  \'" << lookahead->lexeme << "\'";
@@ -165,7 +165,7 @@ Statement *Parser::Stmt()
         }
         Expression *right = Bool();
         stmt = new Assign(left, right);
-        if (!Match(';'))
+        if (!Match(Tag::SEMICOLON))
         {
             stringstream ss;
             ss << "esperado ; no lugar de  \'" << lookahead->lexeme << "\'";
@@ -178,7 +178,7 @@ Statement *Parser::Stmt()
     case Tag::IF:
     {
         Match(Tag::IF);
-        if (!Match('('))
+        if (!Match(Tag::LPAREN))
         {
             stringstream ss;
             ss << "esperado ( no lugar de  \'" << lookahead->lexeme << "\'";
@@ -188,7 +188,7 @@ Statement *Parser::Stmt()
         // criação adiantada do if para pegar erros 
         // da expressão condicional na linha correta
         stmt = new If(cond, nullptr);
-        if (!Match(')'))
+        if (!Match(Tag::RPAREN))
         {
             stringstream ss;
             ss << "esperado ) no lugar de  \'" << lookahead->lexeme << "\'";
@@ -204,14 +204,14 @@ Statement *Parser::Stmt()
     case Tag::WHILE:
     {
         Match(Tag::WHILE);
-        if (!Match('('))
+        if (!Match(Tag::LPAREN))
         {
             stringstream ss;
             ss << "esperado ( no lugar de  \'" << lookahead->lexeme << "\'";
             throw SyntaxError{scanner->Lineno(), ss.str()};
         }
         Expression *cond = Bool();
-        if (!Match(')'))
+        if (!Match(Tag::RPAREN))
         {
             stringstream ss;
             ss << "esperado ) no lugar de  \'" << lookahead->lexeme << "\'";
@@ -233,7 +233,7 @@ Statement *Parser::Stmt()
             ss << "esperado \'while\' no lugar de  \'" << lookahead->lexeme << "\'";
             throw SyntaxError{scanner->Lineno(), ss.str()};
         }
-        if (!Match('('))
+        if (!Match(Tag::LPAREN))
         {
             stringstream ss;
             ss << "esperado ( no lugar de  \'" << lookahead->lexeme << "\'";
@@ -241,13 +241,13 @@ Statement *Parser::Stmt()
         }
         Expression *cond = Bool();
         stmt = new DoWhile(inst, cond);
-        if (!Match(')'))
+        if (!Match(Tag::RPAREN))
         {
             stringstream ss;
             ss << "esperado ) no lugar de  \'" << lookahead->lexeme << "\'";
             throw SyntaxError{scanner->Lineno(), ss.str()};
         }
-        if (!Match(';'))
+        if (!Match(Tag::SEMICOLON))
         {
             stringstream ss;
             ss << "esperado ; no lugar de  \'" << lookahead->lexeme << "\'";
@@ -256,7 +256,7 @@ Statement *Parser::Stmt()
         return stmt;
     }
     // stmt -> block
-    case '{':
+    case Tag::LBRACE:
     {
         stmt = Block();
         return stmt;
@@ -304,12 +304,12 @@ Expression *Parser::Local()
         Match(Tag::ID);
 
         // acesso a elemento de um arranjo
-        if (Match('['))
+        if (Match(Tag::LBRACKET))
         {
             Expression * index = Bool();
             expr = new Access(etype, new Token{Tag::ID, "[]"}, expr, index);
 
-            if (!Match(']'))
+            if (!Match(Tag::RBRACKET))
             {
                 stringstream ss;
                 ss << "esperado ] no lugar de  \'" << lookahead->lexeme << "\'";
@@ -436,9 +436,9 @@ Expression *Parser::Rel()
     {
         Token t = *lookahead;
 
-        if (lookahead->tag == '<')
+        if (lookahead->tag == Tag::LT)
         {
-            Match('<');
+            Match(Tag::LT);
             Expression *expr2 = Ari();
             expr1 = new Relational(new Token{t}, expr1, expr2);
         }
@@ -448,9 +448,9 @@ Expression *Parser::Rel()
             Expression *expr2 = Ari();
             expr1 = new Relational(new Token{t}, expr1, expr2);
         }
-        else if (lookahead->tag == '>')
+        else if (lookahead->tag == Tag::GT)
         {
-            Match('>');
+            Match(Tag::GT);
             Expression *expr2 = Ari();
             expr1 = new Relational(new Token{t}, expr1, expr2);
         }
@@ -485,16 +485,16 @@ Expression *Parser::Ari()
         Token t = *lookahead;
 
         // oper -> + term oper
-        if (lookahead->tag == '+')
+        if (lookahead->tag == Tag::SIGN_PLUS)
         {
-            Match('+');
+            Match(Tag::SIGN_PLUS);
             Expression *expr2 = Term();
             expr1 = new Arithmetic(expr1->type, new Token{t}, expr1, expr2);
         }
         // oper -> - term oper
-        else if (lookahead->tag == '-')
+        else if (lookahead->tag == Tag::SIGN_MINUS)
         {
-            Match('-');
+            Match(SIGN_MINUS);
             Expression *expr2 = Term();
             expr1 = new Arithmetic(expr1->type, new Token{t}, expr1, expr2);
         }
@@ -521,16 +521,16 @@ Expression *Parser::Term()
         Token t = *lookahead;
 
         // calc -> * unary calc
-        if (lookahead->tag == '*')
+        if (lookahead->tag == Tag::SIGN_MULT)
         {
-            Match('*');
+            Match(SIGN_MULT);
             Expression *expr2 = Unary();
             expr1 = new Arithmetic(expr1->type, new Token{t}, expr1, expr2);
         }
         // calc -> / unary calc
-        else if (lookahead->tag == '/')
+        else if (lookahead->tag == Tag::SIGN_DIV)
         {
-            Match('/');
+            Match(SIGN_DIV);
             Expression *expr2 = Unary();
             expr1 = new Arithmetic(expr1->type, new Token{t}, expr1, expr2);
         }
@@ -551,18 +551,18 @@ Expression *Parser::Unary()
     Expression *unary = nullptr;
 
     // unary -> !unary
-    if (lookahead->tag == '!')
+    if (lookahead->tag == Tag::EXCLAMATION)
     {
         Token t = *lookahead;
-        Match('!');
+        Match(Tag::EXCLAMATION);
         Expression *expr = Unary();
         unary = new UnaryExpr(ExprType::BOOL, new Token{t}, expr);
     }
     // unary -> -unary
-    else if (lookahead->tag == '-')
+    else if (lookahead->tag == Tag::SIGN_MINUS)
     {
         Token t = *lookahead;
-        Match('-');
+        Match(Tag::SIGN_MINUS);
         Expression *expr = Unary();
         unary = new UnaryExpr(expr->type, new Token{t}, expr);
     }
@@ -588,11 +588,11 @@ Expression *Parser::Factor()
     switch (lookahead->tag)
     {
     // factor -> (bool)
-    case '(':
+    case Tag::LPAREN :
     {
-        Match('(');
+        Match(Tag::LPAREN);
         expr = Bool();
-        if (!Match(')'))
+        if (!Match(Tag::RPAREN))
         {
             stringstream ss;
             ss << "esperado ) no lugar de  \'" << lookahead->lexeme << "\'";
