@@ -16,7 +16,9 @@ float    {digito}+"."{digito}+([eE][+-]?{digito}+)?
 string   \"([^"\\]|\\.|\\\\)*\"
 
 %%
-{brancos}	; // nenhuma ação e nenhum retorno
+\/\/[^\n]*             { /* Skip single-line comments */ }
+\/\*([^*]|\*+[^*/])*\*\/  { /* Skip multi-line comments */ }
+{brancos}	;
 if		    return Tag::IF; 
 then		return Tag::THEN; 
 else		return Tag::ELSE; 

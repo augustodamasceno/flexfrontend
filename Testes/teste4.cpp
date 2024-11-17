@@ -2,6 +2,7 @@ int main()
 {
     int i; int j; float v; float x; float a[100]; bool flag;
 
+    flag = true;
     while (flag)
     {
         do
