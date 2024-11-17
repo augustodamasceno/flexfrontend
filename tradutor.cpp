@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 		}
 
 		//TestLexer();
-		Lexer leitor;
+		Lexer leitor(&fin);
 		scanner = &leitor;
 		Statement * ast;		
 		Parser tradutor;

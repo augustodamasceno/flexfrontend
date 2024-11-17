@@ -1,2 +1,5 @@
 // constantes para os tokens 
-enum {IF=1, THEN, ELSE, WHILE, ID, NUM, RELOP, STRING}; 
+enum Tag { ID = 256, INTEGER, FLOATING, STRING, TYPE, TRUE, FALSE, MAIN, IF, THEN, ELSE, NUM, 
+            WHILE, DO, OR, AND, EQ, NEQ, LTE, GTE, LT, LE, NE, GT,
+            BOOLEAN };
+

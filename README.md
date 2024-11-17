@@ -33,6 +33,12 @@ Judson Santiago ([JudsonSS](https://github.com/JudsonSS)), disponíveis em:
 make
 ```
 
+# Run
+
+```bash
+./tradutor
+```
+
 ## Apresentação
 
 * h

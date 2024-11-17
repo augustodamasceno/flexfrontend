@@ -1,4 +1,6 @@
 #include <iostream>
+#include <sstream>
+#include <string>
 #include "error.h"
 #include "gen.h"
 using std::cout;

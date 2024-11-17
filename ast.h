@@ -3,6 +3,9 @@
 #define COMPILER_AST
 
 #include "lexer.h"
+#include <string>
+using namespace std;
+
 
 enum NodeType
 {

@@ -16,19 +16,25 @@ string   \"([^"\\]|\\.|\\\\)*\"
 
 %%
 {brancos}	; // nenhuma ação e nenhum retorno
-if		    return IF; 
-then		return THEN; 
-else		return ELSE; 
-while		return WHILE; 
-{id}		return ID;  
-{num}	    return NUM; 
-{string}    return STRING;
-"<"         return RELOP; 
-"<="        return RELOP; 
-"=="        return RELOP; 
-"!="        return RELOP; 
-">"         return RELOP;
-">="        return RELOP;
+if		    return Tag::IF; 
+then		return Tag::THEN; 
+else		return Tag::ELSE; 
+while		return Tag::WHILE; 
+{id}		return Tag::ID;  
+{num}	    return Tag::NUM; 
+{string}    return Tag::STRING;
+"||"        return Tag::OR; 
+"&&"        return Tag::AND; 
+"<"         return Tag::LT; 
+"<="        return Tag::LTE; 
+"=="        return Tag::EQ; 
+"!="        return Tag::NE; 
+">"         return Tag::GT;
+">="        return Tag::GTE;
+main        return Tag::MAIN;
+int         return Tag::INTEGER;
+float       return Tag::FLOATING;
+bool        return Tag::BOOLEAN;
 .           cout << YYText() << " é um token inválido!\n"; 
 %%
 

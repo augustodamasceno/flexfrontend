@@ -8,7 +8,7 @@ extern ifstream fin;
 
 void TestLexer()
 {
-    Lexer scanner;
+    Lexer scanner(&fin);
     Token *t = nullptr;
     while ((t = scanner.Scan()) && (t->tag != EOF))
     {
