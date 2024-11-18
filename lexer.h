@@ -27,9 +27,9 @@ private:
 	int line = 1;		// número da linha atual
 	int lookahead;
 
-	char peek;			// último caractere lido
+	//char peek;			// último caractere lido
 	Token token;		// último token retornado
-	unordered_map<string, Token> token_table;
+	//unordered_map<string, Token> token_table;
 public:
 	explicit Lexer(std::istream* in) : yyFlexLexer(in) {}
 	int Lineno();		// retorna linha atual

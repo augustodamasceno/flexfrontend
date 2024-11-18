@@ -36,12 +36,21 @@ make
 # Run
 
 ```bash
-./tradutor
+./tradutor <ARQUIVO-CÓDIGO>
+```
+
+# Exemlos em Testes
+
+```bash
+./tradutor Testes/teste1.cpp  
+./tradutor Testes/teste2.cpp  
+./tradutor Testes/teste3.cpp  
+./tradutor Testes/teste4.cpp  
 ```
 
 ## Apresentação
 
-* h
+* 
 
 # Licença
 
